@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Main</title>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body onload="load()">
+	<button onclick="logout()">Logout</button>
+	<br/>
+	<button onclick="create()">Create new</button>
+	<table>
+		<thead>
+		<tr>
+		  <th>Title</th>
+		  <th>Start date</th>
+		  <th>End date</th>
+		  <th>Note</th>
+		  <th>Priority</th>
+		  <th>Status</th>
+		  <th></th>
+		</tr>
+	  </thead>
+	  <tbody id="body1">
+	  </tbody>
+	</table>
+	<script type="text/javascript">
+	
+		var body1;
+		var token;
+		
+		function create(){
+			var location=window.location.href;
+					var l=location.split("/");
+					l[l.length] = "create.html";
+					var loc="";
+					for(var i=0; i<l.length-2; i++){
+						loc+=l[i]+"/";
+					}
+					loc+=l[l.length-1];
+					window.open(loc,'_self');
+		}
+		
+		function load(){
+				token=localStorage.getItem("token");
+				if(token != null){
+					body1 = document.getElementById("body1");
+					get();
+				}else {
+					var location=window.location.href;
+					var l=location.split("/");
+					l[l.length] = "login.html";
+					var loc="";
+					for(var i=0; i<l.length-2; i++){
+						loc+=l[i]+"/";
+					}
+					loc+=l[l.length-1];
+					window.open(loc,'_self');
+				}
+		}
+		async function get(){
+			try {
+					var id= localStorage.getItem("id");
+					var link=`https://localhost:44394/api/Taskks/byUserId/`+id;
+					
+					const res = await axios.get(link,{ headers: {'Authorization': token}});
+					
+					if(res.status == 200){
+						var data=res.data;
+						var rows="";
+						for(var i=0;i<data.length;i++){
+						rows+="<tr>"
+						+"<td><p>"+data[i].title+"</p></td>"
+						+"<td><p>"+data[i].start+"</p></td>"
+						+"<td><p>"+data[i].end+"</p></td>"
+						+"<td><p>"+data[i].note+"</p></td>"
+						+"<td><p>"+data[i].priority+"</p></td>"
+						+"<td><p>"+data[i].status+"</p></td>"
+						+"<td><button id=\""+data[i].id+"\">Edit</button></td>"
+						+"</tr>";
+						}
+						body1.innerHTML = rows;
+						addel(data);
+					}else{
+						console.log(res.status);
+					}
+					
+				  } catch (e) {
+					console.log(e);
+				  }
+		}
+		
+		function addel(data){
+				for(var i=0;i<data.length;i++){
+							var elId=""+data[i].id;
+							document.getElementById(elId).addEventListener("click", function(event){ 
+								var id=event.target.id;
+								localStorage.setItem("taskId",id);
+								console.log("taskId "+id);
+								
+								var location=window.location.href;
+								var l=location.split("/");
+								l[l.length] = "update.html";
+								var loc="";
+								for(var i=0; i<l.length-2; i++){
+									loc+=l[i]+"/";
+								}
+								loc+=l[l.length-1];
+								window.open(loc,'_self');
+							});
+				}
+		}
+		
+		function logout(){
+			localStorage.clear();
+			var location=window.location.href;
+					var l=location.split("/");
+					l[l.length] = "login.html";
+					var loc="";
+					for(var i=0; i<l.length-2; i++){
+						loc+=l[i]+"/";
+					}
+					loc+=l[l.length-1];
+					window.open(loc,'_self');
+		}
+	</script>
+
+</body>
+</html>

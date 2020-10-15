@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Signup</title>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body onload="load()">
+	<p>Name</p>
+	<br/>
+	<input type="text" id="name">
+	<br/>
+	<p>Surname</p>
+	<br/>
+	<input type="text" id="surname">
+	<br/>
+	<p>Telephone number</p>
+	<br/>
+	<input type="text" id="telephone">
+	<br/>
+	<p>Mail</p>
+	<br/>
+	<input type="text" id="mail">
+	<br/>
+	<p>Password</p>
+	<br/>
+	<input type="password" id="password">
+	<br/>
+	<p>Repeat password</p>
+	<br/>
+	<input type="password" id="repeat">
+	<br/>
+	<button onclick="signup()">Signup</button>
+	<p id="message"></p>
+	<script type="text/javascript">
+	
+		var name2;
+        var surname;
+		var telephone;
+		var mail;
+        var password;
+		var repeat;
+		
+		function load(){
+		
+				name2 = document.getElementById("name");
+				surname=document.getElementById("surname");
+				telephone=document.getElementById("telephone");
+				mail=document.getElementById("mail");
+				password=document.getElementById("password");
+				repeat=document.getElementById("repeat");
+		}
+		
+		async function signup(){
+		
+			var name1=name2.value;
+			var surname1=surname.value;
+			var telephone1=telephone.value;
+			var mail1=mail.value;
+			var password1=password.value;
+			var repeat1=repeat.value;
+			if(password1 === repeat1){
+				var obj = {
+					"name": name1,
+					"surname": surname1,
+					"telephone": telephone1,
+					"mail": mail1,
+					"passwordHash": password1
+				};
+				try {
+				const res = await axios.post(`https://localhost:44394/api/User`, obj);
+				if(res.status == 201){
+					var location=window.location.href;
+					var l=location.split("/");
+					l[l.length] = "login.html";
+					var loc="";
+					for(var i=0; i<l.length-2; i++){
+						loc+=l[i]+"/";
+					}
+					loc+=l[l.length-1];
+					window.open(loc,'_self');
+				}else{
+					document.getElementById("message").innerHTML = "Incorect parameter!";
+				}
+				
+			  } catch (e) {
+				document.getElementById("message").innerHTML = "Incorect parameter!";
+			  }
+			}else{
+				
+			}
+		}
+	</script>
+
+</body>
+</html>

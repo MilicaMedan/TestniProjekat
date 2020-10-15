@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Create</title>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body onload="load()">
+	<button onclick="logout()">Logout</button>
+	<p>Title</p>
+	<br/>
+	<input type="text" id="title">
+	<br/>
+	<p>Start date</p>
+	<br/>
+	<input type="date" id="start">
+	<br/>
+	<p>Note</p>
+	<br/>
+	<input type="text" id="note">
+	<br/>
+	<p>Priority</p>
+	<br/>
+	<select id="priority">
+	</select>
+	<br/>
+	<p>Status</p>
+	<br/>
+	<select id="statuss">
+	</select>
+	<br/>
+	<p id="message"></p>
+	<br/>
+	<button onclick="create()">Create</button>
+	
+	<script type="text/javascript">
+	
+		var body1;
+		var token;
+		var title;
+        var start;
+		var note;
+		var priority;
+        var statuss;
+		function load(){
+				token=localStorage.getItem("token");
+				if(token != null){
+					body1 = document.getElementById("body1");
+					title = document.getElementById("title");
+					start=document.getElementById("start");
+					note=document.getElementById("note");
+					priority=document.getElementById("priority");
+					statuss=document.getElementById("statuss");
+					
+				}else {
+					var location=window.location.href;
+					var l=location.split("/");
+					l[l.length] = "login.html";
+					var loc="";
+					for(var i=0; i<l.length-2; i++){
+						loc+=l[i]+"/";
+					}
+					loc+=l[l.length-1];
+					window.open(loc,'_self');
+				}
+		}
+		
+		
+		getStatus();
+		getPriority();
+		async function getStatus(){
+					try {
+						var link1=`https://localhost:44394/api/Status`;
+						
+						const res1 = await axios.get(link1,{ headers: {'Authorization': token}});
+						
+						if(res1.status == 200){
+							var data1=res1.data;
+							var opt="";
+							for(var i=0;i<data1.length;i++){
+								opt+="<option value=\""+data1[i].name+"\">"+data1[i].name+"</option>";
+							}
+							statuss.innerHTML = opt;
+						}else{
+							console.log(res1.status);
+						}
+					
+					} catch (e) {
+						console.log(e);
+					}
+		}
+		async function getPriority(){
+				try {
+						var link=`https://localhost:44394/api/Priority`;
+						
+						const res = await axios.get(link,{ headers: {'Authorization': token}});
+						
+						if(res.status == 200){
+							var data=res.data;
+							var rows="";
+							for(var i=0;i<data.length;i++){
+								rows+="<option value=\""+data[i].name+"\"> "+data[i].name+"</option>";
+							}
+							priority.innerHTML = rows;
+						}else{
+							console.log(res.status);
+						}
+					
+					} catch (e) {
+						console.log(e);
+					}
+		}
+		
+		async function create(){
+		
+			var title1=title.value;
+			var start1=start.value;
+			var note1=note.value;
+			var priority1=priority.value;
+			var status1=statuss.value;
+			var userId=parseInt(localStorage.getItem("id"));
+			
+				var obj = {
+					"title": title1,
+					"start": "2020-10-15",
+					"end" : "fgdgd",
+					"note": note1,
+					"priority": priority1,
+					"status": status1,
+                    "UserId" : userId
+				};
+				try {
+				const res = await axios.post(`https://localhost:44394/api/Taskks/add`, obj,{ headers: {'Authorization': token}});
+				if(res.status == 201){
+					var location=window.location.href;
+					var l=location.split("/");
+					l[l.length] = "main.html";
+					var loc="";
+					for(var i=0; i<l.length-2; i++){
+						loc+=l[i]+"/";
+					}
+					loc+=l[l.length-1];
+					window.open(loc,'_self');
+				}else{
+					document.getElementById("message").innerHTML = "Incorect parameter!";
+				}
+				
+			  } catch (e) {
+				document.getElementById("message").innerHTML = "Incorect parameter!";
+			  }
+		}
+		
+		
+		function logout(){
+			localStorage.clear();
+			var location=window.location.href;
+					var l=location.split("/");
+					l[l.length] = "login.html";
+					var loc="";
+					for(var i=0; i<l.length-2; i++){
+						loc+=l[i]+"/";
+					}
+					loc+=l[l.length-1];
+					window.open(loc,'_self');
+		}
+	</script>
+
+</body>
+</html>
